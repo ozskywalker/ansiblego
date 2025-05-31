@@ -41,7 +41,7 @@ func (t *TaskV1) GetData() (data ansible.OrderedMap) {
 func (t *TaskV1) Run(vars map[string]any) (out ansible.OrderedMap, err error) {
 	for _, mod := range ansible.ModulesList("fact") {
 		log.Tracef("Running fact collector %q...", mod)
-		if collected_facts, err := ansible.CollectV1(mod); err == nil {
+		if collected_facts, collectErr := ansible.CollectV1(mod); err == nil {
 			for _, key := range collected_facts.Keys() {
 				log.Tracef("Received data key from fact collector %q: %q", mod, key)
 				if _, exists := out.Get(key); exists {
@@ -52,7 +52,7 @@ func (t *TaskV1) Run(vars map[string]any) (out ansible.OrderedMap, err error) {
 			}
 		} else {
 			// Fact collectors can fail, but it should not be a disaster
-			err = log.Errorf("Error while collecting facts from %q: %v", mod, err)
+			err = log.Errorf("Error while collecting facts from %q: %v", mod, collectErr)
 		}
 	}
 

@@ -82,7 +82,11 @@ func TaskV1SetData(task_ptr any, fmap OrderedMap) error {
 		}*/
 
 		rval := reflect.ValueOf(val)
-		rfield.Interface().MethodByName("SetUnknown").Call([]reflect.Value{rval})
+		method := rfield.MethodByName("SetUnknown")
+		if !method.IsValid() {
+			return fmt.Errorf("Method SetUnknown not found on field %q of type %q", fieldt.Name, rfield.Type().Name())
+		}
+		method.Call([]reflect.Value{rval})
 
 		/*if rfield.Kind() != rval.Kind() {
 			// Those are not the same types which is alarming, so check if field is an Slice
