@@ -61,13 +61,13 @@ if [ "x${PKG_SUFFIX}" != 'xraw' ] ; then
     for exec_suffix in $suffixes; do
         bin_name="${name}.raw.${exec_suffix}"
         out_name="${name}.${PKG_SUFFIX}.${exec_suffix}"
-        
+
         # Check if source binary exists
         if [ ! -f "${bin_name}" ]; then
             echo "Error: Source binary ${bin_name} not found"
             exit 1
         fi
-        
+
         # Run the packers only if the results are older than raw binary
         if [ ! -f "${out_name}" ] || [ "${bin_name}" -nt "${out_name}" ]; then
             if [ "x${PKG_SUFFIX}" = 'xupx' ] ; then
@@ -111,7 +111,7 @@ for out_suffix in $suffixes; do
     echo "--> Combining binaries for ${out_suffix}"
     out_bin="${name}.out.${out_suffix}"
     [ "x$(echo "${out_suffix}" | cut -d- -f1)" != "xwindows" ] || out_bin="${out_bin}.exe"
-    
+
     # Select the appropriate binary based on package type
     if [ "x${PKG_SUFFIX}" = 'xraw' ] || [ "x${PKG_SUFFIX}" = 'xupx' ] ; then
         # RAW and UPX can be used as is
@@ -126,12 +126,12 @@ for out_suffix in $suffixes; do
         [ "x${out_suffix}" != "x${pack_suffix}" ] || continue
         echo "-->   + ${pack_suffix}"
         pack_bin="${name}.${PKG_SUFFIX}.${pack_suffix}"
-        
+
         if [ ! -f "${pack_bin}" ]; then
             echo "Error: Packed binary ${pack_bin} not found"
             exit 1
         fi
-        
+
         echo '' >> "${out_bin}"
         echo "--- EMBEDDED_BINARY ${pack_suffix} ${PKG_SUFFIX} ---" >> "${out_bin}"
         cat "${pack_bin}" >> "${out_bin}"
@@ -153,12 +153,12 @@ chmod +x "${out_bin}"
 for pack_suffix in $suffixes; do
     echo "-->   + ${pack_suffix}"
     pack_bin="${name}.${PKG_SUFFIX}.${pack_suffix}"
-    
+
     if [ ! -f "${pack_bin}" ]; then
         echo "Error: Packed binary ${pack_bin} not found"
         exit 1
     fi
-    
+
     echo '' >> "${out_bin}"
     echo "--- EMBEDDED_BINARY ${pack_suffix} ${PKG_SUFFIX} ---" >> "${out_bin}"
     cat "${pack_bin}" >> "${out_bin}"

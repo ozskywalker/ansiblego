@@ -38,10 +38,10 @@ if [ -f "go.mod" ] && [ -f "go.sum" ] && command -v go >/dev/null 2>&1; then
     # Create temporary directory for safety
     tmp_dir=$(mktemp -d 2>/dev/null || mktemp -d -t 'gotidy')
     trap "rm -rf '$tmp_dir'" EXIT
-    
+
     # Save original files
     cp -f go.mod go.sum "$tmp_dir/"
-    
+
     # Get original modification times using portable method
     if command -v stat >/dev/null 2>&1; then
         # Try GNU stat first, then BSD stat
@@ -52,11 +52,11 @@ if [ -f "go.mod" ] && [ -f "go.sum" ] && command -v go >/dev/null 2>&1; then
         orig_mod_time="1"
         orig_sum_time="1"
     fi
-    
+
     # Run go mod tidy
     tidy_output=$(go mod tidy -v 2>&1)
     tidy_exit=$?
-    
+
     # Get new modification times
     if command -v stat >/dev/null 2>&1; then
         new_mod_time=$(stat -c %Y go.mod 2>/dev/null || stat -f %m go.mod 2>/dev/null || echo "1")
@@ -65,10 +65,10 @@ if [ -f "go.mod" ] && [ -f "go.sum" ] && command -v go >/dev/null 2>&1; then
         new_mod_time="0"
         new_sum_time="0"
     fi
-    
+
     # Check if files changed or tidy had output
-    if [ $tidy_exit -ne 0 ] || [ -n "${tidy_output}" ] || 
-       [ "${orig_mod_time}" != "${new_mod_time}" ] || 
+    if [ $tidy_exit -ne 0 ] || [ -n "${tidy_output}" ] ||
+       [ "${orig_mod_time}" != "${new_mod_time}" ] ||
        [ "${orig_sum_time}" != "${new_sum_time}" ]; then
         echo "Please run 'go mod tidy -v'"
         [ -n "${tidy_output}" ] && echo "${tidy_output}"
@@ -78,7 +78,7 @@ if [ -f "go.mod" ] && [ -f "go.sum" ] && command -v go >/dev/null 2>&1; then
             errors=$((errors + 1))
         fi
     fi
-    
+
     # Restore original files
     mv -f "$tmp_dir/go.mod" "$tmp_dir/go.sum" ./
 else
